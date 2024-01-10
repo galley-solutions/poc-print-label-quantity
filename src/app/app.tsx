@@ -1,5 +1,5 @@
 import { BarsArrowDownIcon } from "@heroicons/react/24/outline";
-import { HTMLAttributes, ReactNode, useEffect, useState } from "react";
+import { ButtonHTMLAttributes, ReactNode, useState } from "react";
 
 type Item = {
   id: string;
@@ -198,7 +198,7 @@ function QuantityMode({
         <select
           className="h-9"
           value={mode || ""}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={(e) => onChange(e.target.value as Mode)}
         >
           <option value=""></option>
           <option value="volume">Volume (calculated per item)</option>
@@ -231,6 +231,7 @@ function QuantityMode({
   );
 }
 
+// @ts-ignore
 function Checkbox({
   label,
   helper,
@@ -272,7 +273,7 @@ function cn(...classes: (string | undefined | false | number)[]): string {
   return classes.filter(Boolean).join(" ");
 }
 
-function ApplyButton(props: HTMLAttributes<HTMLButtonElement>) {
+function ApplyButton(props: ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
     <button
       {...props}
