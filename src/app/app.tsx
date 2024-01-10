@@ -65,41 +65,32 @@ function App() {
           <hr />
         </div>
 
-        <div className="flex gap-4 items-center">
-          <QuantityMode headcount={HEADCOUNT} mode={mode} onChange={setMode} />
+        <div className="flex gap-4 items-end justify-start">
+          <QuantityMode
+            headcount={HEADCOUNT}
+            mode={mode}
+            onChange={(mode) => {
+              setMode(mode);
+              setQuantity(0);
+            }}
+          />
 
-          <div>
+          <div className="flex flex-col">
             <Label>{mode === "fixed" ? "Quantity" : "Extra Labels"}</Label>
-            <div className="flex gap-2 items-center">
+            <div className="flex">
               <input
-                className="border p-1 w-16"
+                className="border p-1 w-0 flex-1"
                 type="number"
                 value={quantity}
                 onChange={(e) => setQuantity(e.target.valueAsNumber)}
               />
-
-              <ApplyButton
-                disabled={mode === "fixed" && !quantity}
-                onClick={applyQuantity}
-              />
             </div>
           </div>
 
-          {/*
-            <div>
-              <Label>Extra Labels</Label>
-              <div className="flex gap-1 items-center">
-                <input
-                  className="border p-1 w-16"
-                  type="number"
-                  value={extra}
-                  onChange={(e) => setExtra(e.target.valueAsNumber)}
-                />
-
-                <ApplyButton disabled={!extra} onClick={applyExtra} />
-              </div>
-            </div>
-          */}
+          <ApplyButton
+            disabled={mode === "fixed" && !quantity}
+            onClick={applyQuantity}
+          />
         </div>
 
         <div>
@@ -265,8 +256,9 @@ function ApplyButton(props: ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
     <button
       {...props}
-      className="text-sm bg-primary text-white rounded-full p-1.5 font-bold disabled:opacity-50 disabled:bg-neutral-200 disabled:text-black"
+      className="flex gap-2 items-center bg-primary text-white rounded-full px-3 py-1.5 font-bold disabled:opacity-50 disabled:bg-neutral-200 disabled:text-black"
     >
+      <span className="uppercase text-xs">Apply</span>{" "}
       <BarsArrowDownIcon className="w-5" />
     </button>
   );
