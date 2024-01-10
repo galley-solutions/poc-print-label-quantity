@@ -71,8 +71,8 @@ function App() {
   }
 
   return (
-    <div className="w-full h-full bg-neutral-600 flex items-start justify-center p-4">
-      <div className="bg-white rounded p-4 w-1/2 max-w-xl flex flex-col gap-6">
+    <div className="w-full min-h-[100vh] bg-neutral-600 p-4">
+      <div className="bg-white rounded p-4 w-1/2 max-w-xl flex flex-col gap-6 mx-auto">
         <div>
           <h1 className="font-bold text-xl">Label Quantity</h1>
           <hr />
