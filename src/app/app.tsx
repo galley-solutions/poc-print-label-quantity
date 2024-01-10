@@ -7,7 +7,7 @@ type Item = {
   volume: number;
 };
 
-type Mode = null | "volume" | "headcount";
+type Mode = null | "volume" | "headcount" | "fixed";
 
 function random(min: number, max: number): number {
   return Math.round(Math.random() * (max - min) + min);
@@ -26,7 +26,6 @@ function App() {
 
   const [mode, setMode] = useState<Mode>("volume");
   const [quantity, setQuantity] = useState(0);
-  const [extra, setExtra] = useState(0);
 
   function generateValues() {
     return items.reduce(
@@ -43,31 +42,19 @@ function App() {
   function applyQuantity() {
     const next = { ...values };
 
-    for (const id in next) {
-      next[id] = quantity;
+    for (const item of items) {
+      let value = quantity;
+
+      if (mode === "volume") {
+        value = item.volume + quantity;
+      } else if (mode === "headcount") {
+        value = HEADCOUNT + quantity;
+      }
+
+      next[item.id] = value;
     }
 
     setValues(next);
-    setQuantity(0);
-    setMode(null);
-  }
-
-  function applyExtra() {
-    const next = { ...values };
-
-    for (const id in next) {
-      next[id] = next[id] + extra;
-    }
-
-    setValues(next);
-    setExtra(0);
-    setMode(null);
-  }
-
-  function applyMode() {
-    if (mode) {
-      setValues(generateValues);
-    }
   }
 
   return (
@@ -78,17 +65,12 @@ function App() {
           <hr />
         </div>
 
-        <div className="grid grid-cols-[1fr_auto_auto] gap-6 items-center">
-          <QuantityMode
-            headcount={HEADCOUNT}
-            mode={mode}
-            onChange={setMode}
-            onConfirm={applyMode}
-          />
+        <div className="flex gap-4 items-center">
+          <QuantityMode headcount={HEADCOUNT} mode={mode} onChange={setMode} />
 
           <div>
-            <Label>Fixed Quantity</Label>
-            <div className="flex gap-1 items-center">
+            <Label>{mode === "fixed" ? "Quantity" : "Extra Labels"}</Label>
+            <div className="flex gap-2 items-center">
               <input
                 className="border p-1 w-16"
                 type="number"
@@ -96,23 +78,28 @@ function App() {
                 onChange={(e) => setQuantity(e.target.valueAsNumber)}
               />
 
-              <ApplyButton disabled={!quantity} onClick={applyQuantity} />
-            </div>
-          </div>
-
-          <div>
-            <Label>Extra Labels</Label>
-            <div className="flex gap-1 items-center">
-              <input
-                className="border p-1 w-16"
-                type="number"
-                value={extra}
-                onChange={(e) => setExtra(e.target.valueAsNumber)}
+              <ApplyButton
+                disabled={mode === "fixed" && !quantity}
+                onClick={applyQuantity}
               />
-
-              <ApplyButton disabled={!extra} onClick={applyExtra} />
             </div>
           </div>
+
+          {/*
+            <div>
+              <Label>Extra Labels</Label>
+              <div className="flex gap-1 items-center">
+                <input
+                  className="border p-1 w-16"
+                  type="number"
+                  value={extra}
+                  onChange={(e) => setExtra(e.target.valueAsNumber)}
+                />
+
+                <ApplyButton disabled={!extra} onClick={applyExtra} />
+              </div>
+            </div>
+          */}
         </div>
 
         <div>
@@ -188,7 +175,7 @@ function QuantityMode({
   mode: Mode;
   headcount: number;
   onChange: (mode: Mode) => void;
-  onConfirm: () => void;
+  onConfirm?: () => void;
 }) {
   return (
     <div className="text-xs flex flex-col items-start gap-1">
@@ -201,11 +188,12 @@ function QuantityMode({
           onChange={(e) => onChange(e.target.value as Mode)}
         >
           <option value=""></option>
+          <option value="fixed">Fixed Quantity</option>
           <option value="volume">Volume (calculated per item)</option>
           <option value="headcount">Headcount ({headcount})</option>
         </select>
 
-        <ApplyButton disabled={!mode} onClick={onConfirm} />
+        {onConfirm && <ApplyButton disabled={!mode} onClick={onConfirm} />}
       </div>
 
       {/*
